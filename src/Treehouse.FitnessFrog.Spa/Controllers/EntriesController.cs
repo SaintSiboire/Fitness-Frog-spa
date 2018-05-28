@@ -12,41 +12,50 @@ namespace Treehouse.FitnessFrog.Spa.Controllers
     {
         private EntriesRepository _entriesRepository = null;
 
-        public EntriesController()
+        public EntriesController(EntriesRepository entriesRepository)
         {
-            var context = new Context();
-            _entriesRepository = new EntriesRepository(context);
+            _entriesRepository = entriesRepository;
         }
 
-        public IEnumerable<Entry> Get()
+        public IHttpActionResult Get()
         {
-            var activityBiking = new Activity() { Name = "Biking" };
+            return Ok(_entriesRepository.GetList());
+        }
 
-            return new List<Entry>()
+        public IHttpActionResult Get(int id)
+        {
+            var entry = _entriesRepository.Get(id);
+
+            if (entry == null)
             {
-                new Entry(2017, 1, 2, activityBiking, 10.0m),
-                new Entry(2017, 1, 3, activityBiking, 13.3m),
-            };
+                return NotFound();
+            }
+            else
+            {
+                return Ok(entry);
+            }
         }
 
-        public Entry Get(int id)
+        public IHttpActionResult Post(Entry entry)
         {
-            return null;
-        }
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        public void Post(Entry entry)
-        {
+            _entriesRepository.Add(entry);
 
+            return Created(Url.Link("DefaultApi",new { controller = "Entries", id = entry.Id }), entry);
         }
 
         public void Put(int id, Entry entry)
         {
-
+            _entriesRepository.Update(entry);
         }
 
         public void Delete(int id)
         {
-
+            _entriesRepository.Delete(id);
         }
 
     }

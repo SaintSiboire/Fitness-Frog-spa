@@ -10,6 +10,11 @@ namespace Treehouse.FitnessFrog.Spa
     {
         public static void Register(HttpConfiguration config)
         {
+            var jsonSerializerSettings = config.Formatters.JsonFormatter.SerializerSettings;
+
+            jsonSerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            jsonSerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
+
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
